@@ -1,0 +1,26 @@
+# THESE COMMENTS ARE NOT VALID FOR JSON PARSING AND THEREFORE SHALL BE REMOVED
+# This file shall be renamed by product_config.json with MANDATORY parts correctly filled
+{
+    "pinstcfg":{
+        "build_modes": ["explicit_name1", "explicit_name2"],
+        "flash_mode": "installer_fab",
+        "pinst_modes":{
+            "default":{
+                "hw_target": "MANDATORY",
+                "sw_target": "MANDATORY",
+                "type": "installer_fab",
+                "updater_filename": null,
+                "p_app": null,
+                "emmc": false,
+                "pinst_version": "5.9.40"
+            },
+            "explicit_name1":{
+                "pinst_version": "5.9.45",
+                "type": "updater"
+            },
+            "explicit_name2":{
+                "sw_target": "another_one_than_default"
+            }
+        }
+    }
+}

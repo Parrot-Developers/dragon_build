@@ -21,11 +21,11 @@ else
 			if [ "$?" != "0" ]; then
 				echo "Failure in ${REPO_PATH} : ${CHECKOUT_CMD}"
 			fi
-			readonly PULL_CMD="git pull --ff-only ${REPO_REMOTE} ${BRANCH} -q"
-			echo -n "${REPO_PATH}: "
-			${PULL_CMD}
+			readonly MERGE_CMD="git merge --ff-only ${REPO_REMOTE}/${BRANCH} -q"
+			echo "${REPO_PATH}: ${BRANCH}"
+			${MERGE_CMD}
 			if [ "$?" != "0" ]; then
-				echo "Failure in ${REPO_PATH} : ${PULL_CMD}"
+				echo "Failure in ${REPO_PATH} : ${MERGE_CMD}"
 			fi
 		fi
 	fi
