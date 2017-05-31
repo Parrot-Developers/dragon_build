@@ -20,9 +20,9 @@ def hook_pre_images(task, args):
     manifest_path = os.path.join(dragon.FINAL_DIR, "etc", "manifest.xml")
     if os.path.exists(os.path.dirname(manifest_path)):
         dragon.gen_manifest_xml(manifest_path)
-    dragon.relative_symlink(manifest_path,
-                            os.path.join(dragon.OUT_DIR,
-                                         os.path.basename(manifest_path)))
+        dragon.relative_symlink(manifest_path,
+                                os.path.join(dragon.OUT_DIR,
+                                             os.path.basename(manifest_path)))
 
 def hook_post_images(task, args):
     # Create the images directory so the release task is happy
