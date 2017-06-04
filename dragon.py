@@ -312,12 +312,13 @@ def gen_manifest_xml(filepath):
     # Generate in a temp file, then move it
     if not os.path.exists(os.path.join(WORKSPACE_DIR, ".repo")):
         return
-    tmpfilepath = tempfile.mkstemp(suffix=".xml")[1]
+    tmpfilepath = tempfile.mkstemp(suffix=".xml")
+    os.close(tmpfilepath[0])
     cmd = ("repo manifest "
             "--revision-as-HEAD "
-            "--suppress-upstream-revision -o %s") % tmpfilepath
+            "--suppress-upstream-revision -o %s") % tmpfilepath[1]
     exec_cmd(cmd, extra_env={"GIT_PAGER": "cat"})
-    exec_cmd("mv %s %s" % (tmpfilepath, filepath))
+    exec_cmd("mv %s %s" % (tmpfilepath[1], filepath))
 
 #===============================================================================
 # Dump alchemy database in xml and return path to it
