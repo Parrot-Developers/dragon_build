@@ -67,7 +67,7 @@ def hook_alchemy_genproject(task, args):
 
     dump_xml = dragon.gen_alchemy_dump_xml()
     cmd_args = [script_path, subscript_name,
-                "-b", "'%s-%s'" % (dragon.PRODUCT, dragon.VARIANT),
+                "-b", "'-p %s-%s -A'" % (dragon.PRODUCT, dragon.VARIANT),
                 dump_xml, " ".join(args)]
     dragon.exec_cmd(" ".join(cmd_args))
 
