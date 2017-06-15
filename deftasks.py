@@ -23,6 +23,12 @@ def hook_pre_images(task, args):
         dragon.relative_symlink(manifest_path,
                                 os.path.join(dragon.OUT_DIR,
                                              os.path.basename(manifest_path)))
+    # Link final/etc/build.prop in out if it exists
+    build_prop_path = os.path.join(dragon.FINAL_DIR, "etc", "build.prop")
+    if os.path.exists(build_prop_path):
+        dragon.relative_symlink(build_prop_path,
+                                os.path.join(dragon.OUT_DIR,
+                                             os.path.basename(build_prop_path)))
 
 def hook_post_images(task, args):
     # Create the images directory so the release task is happy

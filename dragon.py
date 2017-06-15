@@ -443,7 +443,7 @@ def gen_release_archive():
             "src": "images",
         },
         {
-            "src": "final/etc/build.prop",
+            "src": "build.prop",
         },
         {
             "src": "manifest.xml",
