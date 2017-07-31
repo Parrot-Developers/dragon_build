@@ -510,3 +510,43 @@ def gen_release_archive():
 
     # Re-enable police once archive has been generated
     del os.environ["POLICE_HOOK_DISABLED"]
+
+#===============================================================================
+# Install locally a specfic version of debian packages  if needed.
+# base_url: base url of the debian repository
+# pkg_name: name of the package (without version, arch or .deb extension)
+# pkg_version: version of the package.
+# pkg_arch: architecture of the package (amd64 by default).
+# extract_dir: wher the debian package will be installed.
+# force: if True, package will be forcibly downloaded and extracted, otherwise
+# nothing will be done if the extracted directory already exists.
+#===============================================================================
+def debian_install(base_url, pkg_name, pkg_version,
+        pkg_arch=None, extract_dir=None, force=False):
+    # Setup some default
+    if pkg_arch is None:
+        pkg_arch = "amd64"
+    if extract_dir is None:
+        extract_dir = os.path.join(WORKSPACE_DIR, "build", "debian-packages",
+                pkg_name, pkg_version)
+
+    # Remove existing extract directory if in 'force' mode
+    if force and os.path.exists(extract_dir):
+        exec_cmd("rm -rf %s" % extract_dir)
+
+    # Construct package file name
+    pkg_deb_filename = "%s_%s_%s.deb" % (pkg_name, pkg_version, pkg_arch)
+    pkg_deb_path = os.path.join(WORKSPACE_DIR, "build", pkg_deb_filename)
+    url = "%s/%s" % (base_url, pkg_deb_filename)
+
+    # Check if we already have the binary
+    if not os.path.exists(extract_dir):
+        try:
+            # Download debian package and extract it
+            exec_cmd("wget %s -O %s" % (url, pkg_deb_path))
+            makedirs(extract_dir)
+            exec_cmd("dpkg -x %s %s" % (pkg_deb_path, extract_dir))
+        finally:
+            # Cleanup downloaded file (keep extracted dir though)
+            exec_cmd("rm -f %s" % pkg_deb_path)
+    return extract_dir
