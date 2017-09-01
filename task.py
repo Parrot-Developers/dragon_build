@@ -164,7 +164,9 @@ class AlchemyTask(Task):
                 os.path.join(dragon.WORKSPACE_DIR, "packages")])
 
         # Use colors (unless already set or disabled, by jenkins for example)
-        if not os.environ.get("ALCHEMY_USE_COLORS", ""):
+        if not dragon.OPTIONS.colors:
+            self.extra_env["ALCHEMY_USE_COLORS"] = "0"
+        elif not os.environ.get("ALCHEMY_USE_COLORS", ""):
             self.extra_env["ALCHEMY_USE_COLORS"] = "1"
 
     def _do_exec(self, args=None):

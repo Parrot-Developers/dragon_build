@@ -266,7 +266,7 @@ def restart(options, product, variant, args, docker_image=None):
     opt_args = [
         (options.verbose, "-v"),
         (options.keep_going, "-k"),
-        (not options.colors, "--no-colors"),
+        (not options.colors, "--no-color"),
         (options.build_id, "-b %s" % options.build_id),
         (options.police, "--police"),
         (options.police_no_spy, "--police-no-spy"),
