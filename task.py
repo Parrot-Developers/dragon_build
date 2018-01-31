@@ -262,4 +262,4 @@ class ProductTask(Task):
         if args:
             ProductTask._extend_args(cmd_args, args)
 
-        dragon.restart(dragon.OPTIONS, self.product, self.variant, cmd_args)
+        dragon.restart(self.product, self.variant, cmd_args)

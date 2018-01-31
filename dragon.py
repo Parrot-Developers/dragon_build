@@ -20,6 +20,10 @@ from utils import *
 # Options (set by build.py)
 OPTIONS = None
 
+# Build wrappers: Array of tupple with script/command and string to remove from
+# actual command line
+BUILD_WRAPPERS = []
+
 # Set workspace directory (go up relative to this script)
 WORKSPACE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
@@ -257,41 +261,65 @@ def check_build_id():
         raise TaskError("Missing uid, please use -b option")
 
 #===============================================================================
+# Add a wrapper command or script to ba added before the actual command line.
+# 'script will be prepended to the actual command line.
+# 'script' and 'option_text' can contains reference to global variable like
+# '{OUT_DIR}' that will be automatically expanded.
+# option_text will be propagated to restart when needed
+#===============================================================================
+def add_build_wrapper(script, option_text):
+    wrapper = (script, option_text)
+    BUILD_WRAPPERS.append(wrapper)
+
+#===============================================================================
 # Restart the build script with given product/variant
 #===============================================================================
-def restart(options, product, variant, args, docker_image=None):
+def restart(product, variant, extra_args, with_wrappers=False):
+    # Reconstruct command line with given product
     cmd_args = []
+    cmd_args.append(sys.argv[0])
     cmd_args.append("-p %s-%s" % (product, variant))
-    cmd_args.append("-j %s" % options.jobs.restart_arg)
+    cmd_args.append("-j %s" % OPTIONS.jobs.restart_arg)
     opt_args = [
-        (options.verbose, "-v"),
-        (options.keep_going, "-k"),
-        (not options.colors, "--no-color"),
-        (options.build_id, "-b %s" % options.build_id),
-        (options.police, "--police"),
-        (options.police_no_spy, "--police-no-spy"),
-        (options.police_packages, "--police-packages"),
-        (not docker_image and options.docker_image, "--docker %s" % options.docker_image),
+        (OPTIONS.verbose, "-v"),
+        (OPTIONS.keep_going, "-k"),
+        (not OPTIONS.colors, "--no-color"),
+        (OPTIONS.build_id, "-b %s" % OPTIONS.build_id),
+        (OPTIONS.police, "--police"),
+        (OPTIONS.police_no_spy, "--police-no-spy"),
+        (OPTIONS.police_packages, "--police-packages"),
     ]
-    for opt, arg in opt_args:
-        if opt:
-            cmd_args.append(arg)
+    cmd_args.extend([arg for opt, arg in opt_args if opt])
 
-    if args:
-        cmd_args.extend(args)
+    # Handle wrappers
+    # if using them, process them backward (because we insert the script)
+    # otherwise in regular order (to forward option string)
+    wrappers = reversed(BUILD_WRAPPERS) if with_wrappers else BUILD_WRAPPERS
+    for wrapper in wrappers:
+        # Expand variables if needed
+        script = wrapper[0]
+        option_text = wrapper[1]
+        if "{" in script:
+            script = script.format(**globals())
+        if "{" in option_text:
+            option_text = option_text.format(**globals())
+        # Prepend its wrapper or forward its option text
+        if with_wrappers:
+            cmd_args.insert(0, script)
+        else:
+            cmd_args.append(option_text)
 
-    if docker_image is None:
-        prog = sys.argv[0]
-    else:
-        prog = "%s %s" % (
-                os.path.join(os.path.dirname(__file__), "build-with-docker.sh"),
-                docker_image)
+    # Handle extra args
+    if extra_args:
+        cmd_args.extend(extra_args)
 
+    # Go!
+    cmd = " ".join(cmd_args)
     try:
-        exec_cmd("%s %s" % (prog, " ".join(cmd_args)), dryrun_arg="-n")
+        exec_cmd(cmd, dryrun_arg="-n")
     except TaskError as ex:
         logging.error(str(ex))
-        if not options.keep_going:
+        if not OPTIONS.keep_going:
             sys.exit(1)
 
 #===============================================================================

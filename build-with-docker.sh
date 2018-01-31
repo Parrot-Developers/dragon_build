@@ -4,42 +4,27 @@ TOP_DIR=$(pwd)
 
 # Display a short help message
 usage() {
-	echo "Usage: $0 <image> [<build-args>]"
-	echo "  Run the 'build.sh' script inside a docker container."
+	echo "Usage: $0 <image> <command> [<args>]"
+	echo "  Run the command inside a docker container."
 	echo "  The current directory shall be the top of the workspace."
 	echo ""
 	echo "  For custom docker options, please use the env var DOCKER_OPTS."
-	exit 0
 }
 
-# Make sure there is a 'build.sh' in ${TOP_DIR}
-if [ ! -x "${TOP_DIR}/build.sh" ]; then
-	echo "No 'build.sh' script found in '${TOP_DIR}'"
+if [ "$1" = "-h" -o "$1" = "--help" ]; then
+	usage
+	exit 0
+fi
+
+if [ $# -lt 2 ]; then
+	echo "Missing image or command"
+	usage
 	exit 1
 fi
 
-# Parse options
-DOCKER_IMAGE=""
-ARGS=""
+DOCKER_IMAGE=$1; shift
 VOLUME_OPTS=
 
-COMMAND="${TOP_DIR}/build.sh \${ARGS}"
-while [ $# -ne 0 ]; do
-	case ${1} in
-		--interactive) COMMAND="/bin/bash";;
-		--help) usage;;
-		-*)	# We assume that this is an argument
-			ARGS="${ARGS} ${1}";;
-		*)if [ -z "${DOCKER_IMAGE}" ]; then
-			# Docker image should be the first argument
-			DOCKER_IMAGE="${1}"
-		else
-			# Otherwise consider it a custom arg
-			ARGS="${ARGS} ${1}"
-		fi;;
-	esac
-	shift
-done
 # Mount top dir
 VOLUME_OPTS="${VOLUME_OPTS} --volume ${TOP_DIR}:${TOP_DIR}"
 
@@ -69,7 +54,7 @@ fi
 # --user $(id -u):$(id -g) : to use initial user/group.
 # --rm : remove container at the end.
 # --interactive --tty : be interactive with tty.
-eval exec docker run \
+exec docker run \
 	--env QT_GRAPHICSSYSTEM="native" \
 	--env HOME \
 	--env DISPLAY \
@@ -84,4 +69,4 @@ eval exec docker run \
 	--tty \
 	${DOCKER_OPTS} \
 	${DOCKER_IMAGE} \
-	${COMMAND}
+	"$@"
