@@ -277,14 +277,14 @@ def gen_completion():
     logging.info("Completion file: '%s'", filepath)
 
 #===============================================================================
-# Restart the build script with given product/variant and optional wrappers
+# Restart the build script with given product/variant
 #===============================================================================
-def restart(tasks, product, variant, with_wrappers=False):
+def restart(options, tasks, product, variant, docker_image=None):
     args = []
     for _task in tasks:
         args.append("-t %s" % _task["name"])
         args.extend(_task["args"])
-    dragon.restart(product, variant, args, with_wrappers)
+    dragon.restart(options, product, variant, args, docker_image)
 
 #===============================================================================
 #===============================================================================
@@ -463,18 +463,8 @@ def parse_args(extensions):
             action="store_true",
             help="When police is enabled, also enable packages generation.")
 
-    class DockerAction(argparse.Action):
-        def __call__(self, parser, namespace, values, option_string=None):
-            setattr(namespace, self.dest, values)
-            docker_wrapper_script = os.path.join(os.path.dirname(__file__),
-                    "build-with-docker.sh")
-            docker_wrapper_script += " {OPTIONS.docker_image}"
-            dragon.add_build_wrapper(docker_wrapper_script,
-                    "--docker {OPTIONS.docker_image}")
-
     parser.add_argument("--docker",
             dest="docker_image",
-            action=DockerAction,
             nargs="?",
             metavar="IMAGE",
             const="__USE_DEFAULT__",
@@ -657,7 +647,7 @@ def main():
     # image to use if asked
     if options.docker_image == "__USE_DEFAULT__":
         options.docker_image = dragon.get_default_docker_image()
-        if not options.docker_image:
+        if options.docker_image is None:
             logging.error("No default docker image for %s-%s",
                     dragon.PRODUCT, dragon.VARIANT)
             sys.exit(1)
@@ -698,16 +688,17 @@ def main():
 
     if options.product == "forall":
         for product in get_products():
-            restart(tasks, product, "forall")
+            restart(options, tasks, product, "forall")
     elif options.variant == "forall":
         variants = get_variants(options.product)
         for variant in variants:
-            restart(tasks, options.product, variant)
+            restart(options, tasks, options.product, variant)
     else:
         try:
-            # If build wrappers have been registered, restart with them
-            if dragon.BUILD_WRAPPERS:
-                restart(tasks, options.product, options.variant, with_wrappers=True)
+            # If a docker image is specified, restart inside it
+            if options.docker_image is not None:
+                restart(options, tasks, options.product, options.variant,
+                        options.docker_image)
             else:
                 for task in tasks:
                     dragon.do_task(task["name"], task["args"])
