@@ -674,7 +674,11 @@ def main():
             if os.path.exists(buildcfg_path):
                 logging.debug("Importing '%s'", buildcfg_path)
                 sys.path.append(os.path.dirname(buildcfg_path))
-                importlib.import_module(os.path.splitext(buildcfg_name)[0])
+                try:
+                    importlib.import_module(os.path.splitext(buildcfg_name)[0])
+                except dragon.TaskError as ex:
+                    logging.error(str(ex))
+                    sys.exit(1)
                 break
 
     # Check all tasks
