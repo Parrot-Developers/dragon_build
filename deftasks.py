@@ -14,6 +14,8 @@ def hook_post_clean(task, args):
     dragon.exec_cmd("rm -rf %s" % dragon.IMAGES_DIR)
     dragon.exec_cmd("rm -rf %s" % os.path.join(dragon.OUT_DIR, "release-*"))
     dragon.exec_cmd("rm -rf %s" % os.path.join(dragon.OUT_DIR, "pinstrc"))
+    dragon.exec_cmd("rm -f %s" % os.path.join(dragon.OUT_DIR, "build.prop"))
+    dragon.exec_cmd("rm -f %s" % os.path.join(dragon.OUT_DIR, "manifest.xml"))
 
 def hook_pre_images(task, args):
     # Automatically generate a manifest.xml in final/etc (if it exists)
