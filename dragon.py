@@ -337,16 +337,12 @@ def get_default_docker_image():
 # Any file given will be erased if already existing.
 #===============================================================================
 def gen_manifest_xml(filepath):
-    # Generate in a temp file, then move it
     if not os.path.exists(os.path.join(WORKSPACE_DIR, ".repo")):
         return
-    tmpfilepath = tempfile.mkstemp(suffix=".xml")
-    os.close(tmpfilepath[0])
     cmd = ("repo manifest "
             "--revision-as-HEAD "
-            "--suppress-upstream-revision -o %s") % tmpfilepath[1]
+            "--suppress-upstream-revision -o %s") % filepath
     exec_cmd(cmd, extra_env={"GIT_PAGER": "cat"})
-    exec_cmd("mv %s %s" % (tmpfilepath[1], filepath))
 
 #===============================================================================
 # Dump alchemy database in xml and return path to it

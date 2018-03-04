@@ -6,7 +6,7 @@ import sys as _sys
 import logging as _logging
 import subprocess as _subprocess
 
-# Detect windows platform to force using msys shell (though 'sh')
+# Detect windows platform to force using msys shell (through 'sh')
 # instead of default shell (cmd.exe)
 _mswindows = (_sys.platform == "win32")
 
