@@ -60,6 +60,18 @@ exec docker run \
 	--env DISPLAY \
 	--env SHELL \
 	--env XAUTHORITY \
+	--env DRAGON_OUT_ROOT_DIR \
+	--env DRAGON_OUT_DIR \
+	--env TARGET_DEPLOY_ROOT \
+	--env PARROT_BUILD_PROP_GROUP \
+	--env PARROT_BUILD_PROP_PROJECT \
+	--env PARROT_BUILD_PROP_PRODUCT \
+	--env PARROT_BUILD_PROP_VARIANT \
+	--env PARROT_BUILD_PROP_REGION \
+	--env PARROT_BUILD_PROP_UID \
+	--env PARROT_BUILD_PROP_VERSION \
+	--env PARROT_BUILD_TAG_PREFIX \
+	--env POLICE_HOME \
 	${VOLUME_OPTS} \
 	--workdir ${TOP_DIR} \
 	--net=host \
