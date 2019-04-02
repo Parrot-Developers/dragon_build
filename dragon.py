@@ -505,7 +505,10 @@ def gen_release_archive():
             "src": os.path.join(WORKSPACE_DIR, PARROT_BUILD_PROP_UID + ".ods"),
             "mandatory": False
         },
-
+        {
+            "src": "os_packages.txt",
+            "mandatory": False
+        },
     ]
     add_release_contents(contents)
 

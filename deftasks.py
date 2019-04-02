@@ -1,6 +1,8 @@
 
 import sys
 import os
+import json
+import platform
 
 import dragon
 import police
@@ -59,6 +61,14 @@ def hook_pre_release(task, args):
     if dragon.PARROT_BUILD_PROP_UID.lower() != dragon.PARROT_BUILD_PROP_UID:
         raise dragon.TaskError("You shall provide a lowercase build_id")
     dragon.exec_cmd("rm -rf %s" % dragon.RELEASE_DIR)
+    if platform.system() == 'Linux':
+        dragon.exec_cmd("dpkg --list > os_packages.txt", cwd=dragon.OUT_DIR)
+    elif platform.system() == 'Darwin':
+        data = dragon.exec_shell("brew info --installed --json=v1")
+        data_json = json.loads(data)
+        with open(os.path.join(dragon.OUT_DIR, 'os_packages.txt'), 'w') as os_packages:
+            data_lines = json.dumps(data_json, indent=4)
+            os_packages.write(data_lines)
 
 def hook_gen_release_archive(task, args):
     dragon.gen_release_archive()
