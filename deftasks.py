@@ -61,6 +61,7 @@ def hook_pre_release(task, args):
     if dragon.PARROT_BUILD_PROP_UID.lower() != dragon.PARROT_BUILD_PROP_UID:
         raise dragon.TaskError("You shall provide a lowercase build_id")
     dragon.exec_cmd("rm -rf %s" % dragon.RELEASE_DIR)
+    dragon.makedirs(dragon.OUT_DIR)
     if platform.system() == 'Linux':
         dragon.exec_cmd("dpkg --list > os_packages.txt", cwd=dragon.OUT_DIR)
     elif platform.system() == 'Darwin':
