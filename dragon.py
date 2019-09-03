@@ -17,6 +17,8 @@ from task import ProductTask as ProductTask
 
 from utils import *
 
+from version import Version, split_uid
+
 # Options (set by build.py)
 OPTIONS = None
 
@@ -50,6 +52,7 @@ PARROT_BUILD_PROP_REGION = os.environ.get("PARROT_BUILD_PROP_REGION", "")
 PARROT_BUILD_PROP_UID = os.environ.get("PARROT_BUILD_PROP_UID", "")
 PARROT_BUILD_PROP_VERSION = os.environ.get("PARROT_BUILD_PROP_VERSION", "")
 PARROT_BUILD_TAG_PREFIX = os.environ.get("PARROT_BUILD_TAG_PREFIX", "")
+PARROT_BUILD_VERSION = None
 
 # Initialize directory where alchemy is from environment
 ALCHEMY_HOME = os.environ.get("ALCHEMY_HOME", "")

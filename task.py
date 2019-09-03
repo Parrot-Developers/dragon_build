@@ -2,6 +2,7 @@
 import sys
 import os
 import logging
+import subprocess
 
 import dragon
 import utils
@@ -101,8 +102,8 @@ class Task(object):
                 TaskExit.wrap(self._do_exec, args)
             if self.posthook:
                 TaskExit.wrap(self.posthook, self, args)
-        except TaskError as ex:
-            logging.error("Task '%s' failed (%s)", self.name, ex.message)
+        except subprocess.CalledProcessError as ex:
+            logging.error("Task '%s' failed (%s)", self.name, str(ex))
             if not dragon.OPTIONS.keep_going:
                 sys.exit(1)
         else:

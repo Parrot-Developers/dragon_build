@@ -15,6 +15,7 @@ sys.dont_write_bytecode = True
 
 import dragon
 import police
+import utils
 
 USAGE = (
     "  %(prog)s -h|--help\n"
@@ -328,18 +329,14 @@ def setup_globals(options):
             dragon.PARROT_BUILD_PROP_VERSION = "0.0.0"
 
     # If no version but uid, extract version from uid
-    # format: <prefix>-MAJOR.MINOR.RELEASE[-extra]
-    # version will be MAJOR.MINOR.RELEASE[-extra]
     if not dragon.PARROT_BUILD_PROP_VERSION:
         assert dragon.PARROT_BUILD_PROP_UID
-        match = re.match(r"^(?:.*-)?((\d+\.\d+\.\d+)(-.*)?)$",
-                         dragon.PARROT_BUILD_PROP_UID)
-        if not match:
-            dragon.PARROT_BUILD_PROP_VERSION = "0.0.0"
-            logging.warning("Unable to extract version from UID (%s).",
+        try:
+            _, dragon.PARROT_BUILD_PROP_VERSION = dragon.split_uid(dragon.PARROT_BUILD_PROP_UID)
+        except ValueError:
+            logging.error("Unable to extract version from UID (%s).",
                     dragon.PARROT_BUILD_PROP_UID)
-        else:
-            dragon.PARROT_BUILD_PROP_VERSION = match.group(1)
+            sys.exit(1)
 
     # Construct a default uid based on product/variant/version/date
     if not dragon.PARROT_BUILD_PROP_UID:
@@ -348,6 +345,13 @@ def setup_globals(options):
                 dragon.PARROT_BUILD_PROP_VARIANT,
                 datetime.datetime.now().strftime("%Y%m%d-%H%M"),
                 dragon.PARROT_BUILD_PROP_VERSION)
+
+    # Decode the version
+    try:
+        dragon.PARROT_BUILD_VERSION = dragon.Version(dragon.PARROT_BUILD_PROP_VERSION)
+    except ValueError:
+        logging.error("Invalid version name (%s).", dragon.PARROT_BUILD_PROP_VERSION)
+        sys.exit(1)
 
     # Synchronize option with variable for uid
     options.build_id = dragon.PARROT_BUILD_PROP_UID
@@ -590,9 +594,14 @@ def load_extensions():
 # Call the given function for all loaded extensions
 #===============================================================================
 def call_extensions(extensions, fct, *args):
-    for extension in extensions:
-        if hasattr(extension, fct):
-            getattr(extension, fct)(*args)
+    try:
+        for extension in extensions:
+            if hasattr(extension, fct):
+                getattr(extension, fct)(*args)
+    except utils.SetupError as se:
+        logging.error("Buildext setup error: '%s'.", str(se))
+        sys.exit(1)
+
 
 #===============================================================================
 #===============================================================================

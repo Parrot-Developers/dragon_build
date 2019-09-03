@@ -23,6 +23,12 @@ class ExecError(_subprocess.SubprocessError):
         return self.message
 
 #===============================================================================
+# Buildext setup error
+#===============================================================================
+class SetupError(Exception):
+    pass
+
+#===============================================================================
 # Execute given command in given directory with given extra environment
 # and get output as a string.
 # If command fails, it will be ignored.
