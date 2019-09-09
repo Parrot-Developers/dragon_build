@@ -115,13 +115,14 @@ class Task(object):
 class AlchemyTask(Task):
     def __init__(self, name, desc, product, variant, defargs=None,
                 secondary_help=False, prehook=None, posthook=None, weak=False,
-                outsubdir=None):
+                outsubdir=None, host_in_subdir=True):
         Task.__init__(self, name, desc, secondary_help=secondary_help,
                 prehook=prehook, posthook=posthook, weak=weak)
         self.product = product
         self.product_variant = variant
         self.defargs = defargs
         self.outsubdir = outsubdir
+        self.host_in_subdir = host_in_subdir
 
     def _setup_extra_env(self):
         # Export parrot build properties
@@ -154,6 +155,13 @@ class AlchemyTask(Task):
         self.extra_env["ALCHEMY_TARGET_CONFIG_DIR"] = os.path.join(
                 dragon.WORKSPACE_DIR, "products",
                 self.product, self.product_variant, "config")
+        if not self.host_in_subdir:
+            # Export host out and host staging
+            host_out_dir = os.path.join(dragon.OUT_DIR, "host")
+            host_build = os.path.join(host_out_dir, "build")
+            host_staging = os.path.join(host_out_dir, "staging")
+            self.extra_env["ALCHEMY_HOST_OUT_BUILD"] = host_build
+            self.extra_env["ALCHEMY_HOST_OUT_STAGING"] = host_staging
 
         # Only scan 'packages' sub-directory and exclude top directory (workspace)
         self.extra_env["ALCHEMY_TARGET_SCAN_PRUNE_DIRS"] = " ".join([

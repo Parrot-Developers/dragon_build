@@ -124,9 +124,9 @@ def add_task(task):
 def add_alchemy_task(name, desc, product, variant, defargs=None,
         secondary_help=False,
         prehook=None, posthook=None, weak=False,
-        outsubdir=None):
+        outsubdir=None, host_in_subdir=True):
     add_task(AlchemyTask(name, desc, product, variant, defargs,
-            secondary_help, prehook, posthook, weak, outsubdir))
+            secondary_help, prehook, posthook, weak, outsubdir, host_in_subdir))
 
 #===============================================================================
 # Register a new meta task.
@@ -170,7 +170,8 @@ def _override_task(task, desc=None, exechook=None, prehook=None, posthook=None):
 # Override an alchemy task
 #===============================================================================
 def override_alchemy_task(name, desc=None, defargs=None,
-        exechook=None, prehook=None, posthook=None, outsubdir=None):
+        exechook=None, prehook=None, posthook=None, outsubdir=None,
+        host_in_subdir=True):
     task = _TASKS.get(name, None)
     if not task:
         logging.warning("override_alchemy_task: unknown task: '%s'", name)
@@ -181,6 +182,7 @@ def override_alchemy_task(name, desc=None, defargs=None,
             task.defargs = defargs
         if outsubdir is not None:
             task.outsubdir = outsubdir
+        task.host_in_subdir = host_in_subdir
         _override_task(task, desc, exechook, prehook, posthook)
 
 #===============================================================================
