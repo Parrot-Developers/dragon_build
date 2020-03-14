@@ -533,7 +533,9 @@ def gen_release_archive():
     exec_cmd("md5sum $(find . -follow  -name '.git*' -prune -or -type f -print) > md5sum.txt", cwd=RELEASE_DIR)
 
     # Archive the release (follow symlinks)
-    exec_cmd("tar --exclude=.git -C %s -hcf %s ." % (RELEASE_DIR, tmp_release_file))
+    # Add --force-local to tar command on windows to avoid interpretation of ':'
+    tar_cmd = "tar --force-local" if sys.platform == "win32" else "tar"
+    exec_cmd("%s --exclude=.git -C %s -hcf %s ." % (tar_cmd, RELEASE_DIR, tmp_release_file))
 
     # Do not create link at root of workspace if output dir is somewhere else
     # (jenkins for example)
