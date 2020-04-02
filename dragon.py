@@ -22,7 +22,7 @@ from version import Version, split_uid
 # Options (set by build.py)
 OPTIONS = None
 
-# Build wrappers: Array of tupple with script/command and string to remove from
+# Build wrappers: Array of tuple with script/command and string to remove from
 # actual command line
 BUILD_WRAPPERS = []
 
@@ -546,12 +546,12 @@ def gen_release_archive():
     del os.environ["POLICE_HOOK_DISABLED"]
 
 #===============================================================================
-# Install locally a specfic version of debian packages  if needed.
+# Install locally a specific version of debian packages  if needed.
 # base_url: base url of the debian repository
 # pkg_name: name of the package (without version, arch or .deb extension)
 # pkg_version: version of the package.
 # pkg_arch: architecture of the package (amd64 by default).
-# extract_dir: wher the debian package will be installed.
+# extract_dir: where the debian package will be installed.
 # force: if True, package will be forcibly downloaded and extracted, otherwise
 # nothing will be done if the extracted directory already exists.
 #===============================================================================
