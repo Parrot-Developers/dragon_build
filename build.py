@@ -9,6 +9,8 @@ import datetime
 import re
 import importlib
 import collections
+import hashlib
+import subprocess
 
 # Don't pollute tree with pyc
 sys.dont_write_bytecode = True
@@ -602,6 +604,56 @@ def call_extensions(extensions, fct, *args):
         logging.error("Buildext setup error: '%s'.", str(se))
         sys.exit(1)
 
+#===============================================================================
+# Check if an EULA (End User License Agreement) is present in the manifest
+# directory and if it has been accepted.
+#===============================================================================
+def check_eula():
+    manifest_dir = os.path.join(dragon.WORKSPACE_DIR, ".repo", "manifests")
+    eula_filenames = [ "EULA.txt", "EULA.md" ]
+    for eula_filename in eula_filenames:
+        eula_filepath = os.path.join(manifest_dir, eula_filename)
+        if os.path.exists(eula_filepath):
+            break
+    else:
+        # No EULA file found
+        return
+
+    # Get hash of EULA to approve
+    with open(eula_filepath, "rb") as eula:
+        eula_md5 = hashlib.md5(eula.read()).hexdigest()
+
+    # Check if already approved by looking for a file in HOME directory
+    ok_dirpath = os.path.join(os.path.expanduser("~"), ".config", "dragon_build")
+    ok_filename = "EULA-" + eula_md5
+    ok_filepath = os.path.join(ok_dirpath, ok_filename)
+
+    if os.path.exists(ok_filepath):
+        return
+
+    print("You first need to accept the folowing End User Licence Agreement:")
+    print()
+    input("Press [ENTER]")
+
+    # -X : do not clear screen at the end
+    # -E : stop less at the end
+    cmd = ["less", "-XE", eula_filepath]
+    subprocess.call(cmd)
+
+    # Ask for answer
+    ok_answers = ["y", "Y"]
+    ko_answers = ["n", "N"]
+    answer = None
+    while answer not in ok_answers + ko_answers:
+        answer = input("Do you accept ? [y/n]")
+
+    # Create file if OK, abort if KO
+    if answer in ko_answers:
+        sys.exit(1)
+
+    utils.makedirs(os.path.dirname(ok_filepath))
+    with open(ok_filepath, "w"):
+        pass
 
 #===============================================================================
 #===============================================================================
@@ -611,6 +663,9 @@ def main():
         sys.exit(0)
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
+
+    # If an EULA is present, check that it as been accepted.
+    check_eula()
 
     # Load extensions
     extensions = load_extensions()
