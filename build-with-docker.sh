@@ -4,9 +4,11 @@ TOP_DIR=$(pwd)
 
 # Display a short help message
 usage() {
-	echo "Usage: $0 <image> <command> [<args>]"
+	echo "Usage: $0 [--home] <image> <command> [<args>]"
 	echo "  Run the command inside a docker container."
 	echo "  The current directory shall be the top of the workspace."
+	echo ""
+	echo "  If --home is given the home directory will be mounted as a docker volume"
 	echo ""
 	echo "  For custom docker options, please use the env var DOCKER_OPTS."
 }
@@ -14,6 +16,12 @@ usage() {
 if [ "$1" = "-h" -o "$1" = "--help" ]; then
 	usage
 	exit 0
+fi
+
+MOUNT_HOME=
+if [ "$1" = "--home" ]; then
+	MOUNT_HOME=true
+	shift
 fi
 
 if [ $# -lt 2 ]; then
@@ -43,8 +51,10 @@ for grp in $(id -G); do
 done
 
 # For settings/ssh access
-if [ "${HOME}" != "" ]; then
-	VOLUME_OPTS="${VOLUME_OPTS} --volume ${HOME}:${HOME}"
+if [ "${MOUNT_HOME}" != "" ]; then
+	if [ "${HOME}" != "" ]; then
+		VOLUME_OPTS="${VOLUME_OPTS} --volume ${HOME}:${HOME}"
+	fi
 fi
 
 # Run the given image in a new container with some default options.
