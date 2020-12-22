@@ -137,7 +137,7 @@ dragon.add_meta_task(
 
 dragon.add_meta_task(
     name="all",
-    desc="Build and generate images for product",
+    desc="Build and generate default images for product",
     subtasks=["build", "images"],
     weak=True
 )
