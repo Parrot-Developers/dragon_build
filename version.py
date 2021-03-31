@@ -159,6 +159,17 @@ class Version(object):
     def __ge__(self, other):
         return not self.__lt__(other)
 
+    # create a fake version which is a pure release from the current version
+    def as_release(self):
+        version_release = Version(self.__repr__())
+
+        version_release.type = TYPE_RELEASE
+        version_release.custom = None
+        version_release.custom_number = 0
+        version_release.type_string = None
+        version_release.build = 0
+
+        return version_release
 
 def split_uid(uid):
     # find a dash in uid where the right part is a valid version
