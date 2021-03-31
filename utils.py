@@ -107,7 +107,8 @@ def relative_symlink(src, dst):
             raise ExecError("'%s' should not be a regular file/directory" % dst)
         exec_cmd("rm -f %s" % dst)
     makedirs(_os.path.dirname(dst))
-    exec_cmd("ln -fs %s %s" % (_os.path.relpath(src, _os.path.dirname(dst)), dst))
+    exec_cmd("ln -fs %s %s" % (_os.path.relpath(
+         src, _os.path.dirname(_os.path.realpath(dst))), dst))
 
 #===============================================================================
 # Create directory tree if needed with correct access rights.
