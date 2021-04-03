@@ -163,7 +163,7 @@ class Version(object):
     def as_release(self):
         version_release = Version(self.__repr__())
 
-        version_release.type = TYPE_RELEASE
+        version_release.type = Version.TYPE_RELEASE
         version_release.custom = None
         version_release.custom_number = 0
         version_release.type_string = None
