@@ -45,6 +45,10 @@ fi
 VOLUME_OPTS="${VOLUME_OPTS} --volume /etc/passwd:/etc/passwd"
 VOLUME_OPTS="${VOLUME_OPTS} --volume /etc/group:/etc/group"
 
+# By default a non-interactive pseudo-TTY is allocated, and we only
+# keep STDIN open in the case of script being executed from a terminal
+[ -t 0 ] && DOCKER_OPTS="${DOCKER_OPTS} --interactive"
+
 # Duplicate all user groups
 for grp in $(id -G); do
 	DOCKER_OPTS="${DOCKER_OPTS} --group-add ${grp}"
@@ -87,7 +91,6 @@ exec docker run \
 	--net=host \
 	--user $(id -u):$(id -g) \
 	--rm \
-	--interactive \
 	--tty \
 	${DOCKER_OPTS} \
 	${DOCKER_IMAGE} \
