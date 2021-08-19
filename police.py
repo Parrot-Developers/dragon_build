@@ -53,7 +53,7 @@ def gen_report(addhtml=True, addtxt=False, compress=False):
             os.path.join(dragon.POLICE_HOME, "police-process.py"),
             dragon.POLICE_SPY_LOG,
             dragon.POLICE_PROCESS_LOG,
-            "-v" if dragon.OPTIONS.verbose else ""))
+            "-vv" if dragon.OPTIONS.verbose else ""))
 
     # Report step
     logging.info("Police: report")
@@ -65,7 +65,7 @@ def gen_report(addhtml=True, addtxt=False, compress=False):
             dragon.WORKSPACE_DIR,
             dragon.OUT_DIR,
             dragon.FINAL_DIR,
-            "-v" if dragon.OPTIONS.verbose else "",
+            "-vv" if dragon.OPTIONS.verbose else "",
             " ".join([("--xml-license %s" % xml) for xml in dragon.POLICE_XML_LICENSES])))
 
     # Remove existing police files
