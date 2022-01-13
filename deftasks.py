@@ -202,7 +202,7 @@ dragon.add_meta_task(
         "police-report" if dragon.OPTIONS.police else "",
         "police-packages" if dragon.OPTIONS.police_packages else "",
         "images-all",
-        "alchemy symbols-tar sdk",
+        "alchemy symbols-tar sdk dump-modules",
         "gen-release-archive"
     ],
     prehook = hook_pre_release,

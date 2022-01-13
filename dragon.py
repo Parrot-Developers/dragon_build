@@ -519,6 +519,10 @@ def gen_release_archive():
             "src": "os_packages.txt",
             "mandatory": False
         },
+        {
+            "src": "alchemy-modules.csv",
+            "mandatory": False
+        },
     ]
     add_release_contents(contents)
 
