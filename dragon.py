@@ -34,6 +34,8 @@ PRODUCT = ""
 VARIANT = ""
 OUT_ROOT_DIR = os.environ.get("DRAGON_OUT_ROOT_DIR", "")
 OUT_DIR = os.environ.get("DRAGON_OUT_DIR", "")
+PACKAGES_DIR = os.environ.get("DRAGON_PACKAGES_DIR", "")
+PRODUCTS_DIR = os.environ.get("DRAGON_PRODUCTS_DIR", "")
 BUILD_DIR = ""
 DEPLOY_DIR = os.environ.get("TARGET_DEPLOY_ROOT", "usr").strip("/")
 STAGING_DIR = ""
@@ -369,8 +371,8 @@ def get_alchemy_var(varname):
 def get_json_config_path(warn_if_not_found=False):
     search_paths = [
         os.path.join(OUT_DIR),
-        os.path.join(WORKSPACE_DIR, "products", PRODUCT, VARIANT, "config"),
-        os.path.join(WORKSPACE_DIR, "products", PRODUCT),
+        os.path.join(PRODUCTS_DIR, PRODUCT, VARIANT, "config"),
+        os.path.join(PRODUCTS_DIR, PRODUCT),
     ]
 
     json_name = "product_config.json"

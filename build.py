@@ -86,14 +86,13 @@ def get_default_entry(dirpath, entries):
 # Get list of available products.
 #===============================================================================
 def get_products():
-    products_dir = os.path.join(dragon.WORKSPACE_DIR, "products")
-    return get_dir_entries(products_dir)
+    return get_dir_entries(dragon.PRODUCTS_DIR)
 
 #===============================================================================
 # Get list of available variants.
 #===============================================================================
 def get_variants(product):
-    variants_dir = os.path.join(dragon.WORKSPACE_DIR, "products", product)
+    variants_dir = os.path.join(dragon.PRODUCTS_DIR, product)
     return get_dir_entries(variants_dir)
 
 #===============================================================================
@@ -103,8 +102,7 @@ def get_variants(product):
 # return it.
 #===============================================================================
 def get_default_product():
-    products_dir = os.path.join(dragon.WORKSPACE_DIR, "products")
-    return get_default_entry(products_dir, get_products())
+    return get_default_entry(dragon.PRODUCTS_DIR, get_products())
 
 #===============================================================================
 # Get default variant.
@@ -113,7 +111,7 @@ def get_default_product():
 # return it.
 #===============================================================================
 def get_default_variant(product):
-    variants_dir = os.path.join(dragon.WORKSPACE_DIR, "products", product)
+    variants_dir = os.path.join(dragon.PRODUCTS_DIR, product)
     return get_default_entry(variants_dir, get_variants(product))
 
 #===============================================================================
@@ -680,6 +678,12 @@ def main():
     for extension in extensions:
         logging.debug("Loaded extension '%s'", extension.__file__)
 
+    # Setup packages/products dir from options
+    if not dragon.PACKAGES_DIR:
+        dragon.PACKAGES_DIR = os.path.join(dragon.WORKSPACE_DIR, "packages")
+    if not dragon.PRODUCTS_DIR:
+        dragon.PRODUCTS_DIR = os.path.join(dragon.WORKSPACE_DIR, "products")
+
     # Extract product and variant from -p option
     if options.product is not None:
         idx = options.product.rfind("-")
@@ -708,11 +712,10 @@ def main():
     if not check_product(options) or not check_variant(options):
         sys.exit(1)
     if options.product != "forall":
-        options.product_dir = os.path.join(dragon.WORKSPACE_DIR,
-                "products", options.product)
+        options.product_dir = os.path.join(dragon.PRODUCTS_DIR, options.product)
     if options.variant != "forall":
-        options.variant_dir = os.path.join(dragon.WORKSPACE_DIR,
-                "products", options.product, options.variant)
+        options.variant_dir = os.path.join(dragon.PRODUCTS_DIR,
+                options.product, options.variant)
 
     # Setup global variables (directories...)
     setup_globals(options)

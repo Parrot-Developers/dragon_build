@@ -154,7 +154,7 @@ class AlchemyTask(Task):
         self.extra_env["ALCHEMY_TARGET_PRODUCT_VARIANT"] = self.product_variant
         self.extra_env["ALCHEMY_TARGET_OUT"] = out_dir
         self.extra_env["ALCHEMY_TARGET_CONFIG_DIR"] = os.path.join(
-                dragon.WORKSPACE_DIR, "products",
+                dragon.PRODUCTS_DIR,
                 self.product, self.product_variant, "config")
         if not self.host_in_subdir:
             # Export host out and host staging
@@ -170,7 +170,7 @@ class AlchemyTask(Task):
                 dragon.WORKSPACE_DIR])
         self.extra_env["ALCHEMY_TARGET_SCAN_ADD_DIRS"] = " ".join([
                 os.environ.get("ALCHEMY_TARGET_SCAN_ADD_DIRS", ""),
-                os.path.join(dragon.WORKSPACE_DIR, "packages")])
+                dragon.PACKAGES_DIR])
 
         # Use colors (unless already set or disabled, by jenkins for example)
         if not dragon.OPTIONS.colors:
