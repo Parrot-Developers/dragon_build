@@ -31,7 +31,16 @@ if [ $# -lt 2 ]; then
 fi
 
 DOCKER_IMAGE=$1; shift
+ENV_OPTS=
 VOLUME_OPTS=
+
+# Set Android NDK/SDK environment variables, if exist
+if [ -n "${ANDROID_NDK_PATH}" ]; then
+	ENV_OPTS="${ENV_OPTS} --env ANDROID_NDK_PATH"
+fi
+if [ -n "${ANDROID_SDK_PATH}" ]; then
+	ENV_OPTS="${ENV_OPTS} --env ANDROID_SDK_PATH"
+fi
 
 # Mount top dir
 VOLUME_OPTS="${VOLUME_OPTS} --volume ${TOP_DIR}:${TOP_DIR}"
@@ -86,6 +95,7 @@ exec docker run \
 	--env PARROT_BUILD_PROP_VERSION \
 	--env PARROT_BUILD_TAG_PREFIX \
 	--env POLICE_HOME \
+	${ENV_OPTS} \
 	${VOLUME_OPTS} \
 	--workdir ${TOP_DIR} \
 	--net=host \
