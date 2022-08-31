@@ -159,6 +159,7 @@ gen_tasks = {
     "geneclipse": "Generate Eclipse CDT project",
     "genqtcreator": "Generate QtCreator project",
     "genvscode": "Generate VisualStudio Code project",
+    "genjsondb": "Generate compile_commands.json"
 }
 for taskname, taskdesc in gen_tasks.items():
     dragon.add_meta_task(
