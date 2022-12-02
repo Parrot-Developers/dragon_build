@@ -541,7 +541,7 @@ def gen_release_archive():
     os.environ["POLICE_HOOK_DISABLED"] = "1"
 
     # Generate md5sum file
-    exec_cmd("find . -follow -name '.git*' -or -path './md5sum.txt' -prune -or -type f -print0 | xargs -0 md5sum > md5sum.txt",
+    exec_cmd("find . -follow -name '.git*' -prune -or -path './md5sum.txt' -prune -or -type f -print0 | xargs -0 md5sum > md5sum.txt",
             cwd=RELEASE_DIR)
 
     # Archive the release (follow symlinks)
