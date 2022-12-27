@@ -431,9 +431,14 @@ def add_release_contents(contents, warn_on_exist=False):
             "OUT_DIR"]:
         os.environ[_envvar] = globals().get(_envvar)
 
-    # export build version without suffix
+    # export corresponding release version of the actual build version
     os.environ["PARROT_BUILD_VERSION_AS_RELEASE"] = str(
         PARROT_BUILD_VERSION.as_release()
+    )
+
+    # export build version without '+customN' suffix
+    os.environ["PARROT_BUILD_VERSION_AS_NOT_CUSTOM"] = str(
+        PARROT_BUILD_VERSION.as_not_custom()
     )
 
     for _elem in contents:

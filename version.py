@@ -159,17 +159,27 @@ class Version(object):
     def __ge__(self, other):
         return not self.__lt__(other)
 
-    # create a fake version which is a pure release from the current version
+    # generate a pure release version from the current version
     def as_release(self):
-        version_release = Version(self.__repr__())
+        v = Version(self.__repr__())
 
-        version_release.type = Version.TYPE_RELEASE
-        version_release.custom = None
-        version_release.custom_number = 0
-        version_release.type_string = None
-        version_release.build = 0
+        v.type = Version.TYPE_RELEASE
+        v.custom = None
+        v.custom_number = 0
+        v.type_string = None
+        v.build = 0
 
-        return version_release
+        return v
+
+    # generate a version without custom suffix from the current version
+    def as_not_custom(self):
+        v = Version(self.__repr__())
+
+        v.custom = None
+        v.custom_number = 0
+
+        return v
+
 
 def split_uid(uid):
     # find a dash in uid where the right part is a valid version
