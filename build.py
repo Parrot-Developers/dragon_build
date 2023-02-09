@@ -678,17 +678,17 @@ def main():
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
-    # If an EULA is present, check that it as been accepted.
-    check_eula(options.accept_eula)
-
-    # Load extensions
-    extensions = load_extensions()
-
     # Parse options/tasks
     options, tasks = parse_args(extensions)
     setup_log(options)
     options.jobs = parse_jobs(options.jobs)
     dragon.OPTIONS = options
+
+    # If an EULA is present, check that it as been accepted.
+    check_eula(options.accept_eula)
+
+    # Load extensions
+    extensions = load_extensions()
 
     # We can log now that logging was correctly setup
     for extension in extensions:
