@@ -30,6 +30,8 @@ USAGE = (
     "    -> Start alchemy build with given arguments.\n"
     "  %(prog)s [-p <product>[-<variant>]] [<options>] -t <task> [<taskargs>...]\n"
     "    -> Start a task and its sub tasks with given arguments.\n"
+    "  %(prog)s -r\n"
+    "    -> Can build as root.\n"
     "\n"
     " Multiple occurrences of -A and -t <task> can be present in the same command line.\n"
     "\n"
@@ -486,6 +488,17 @@ def parse_args(extensions):
             help="Use a docker container for the build. "
                     "Default image depends on product/variant.")
 
+    parser.add_argument("-r",
+            dest="root",
+            action="store_true",
+            help="Build as root.")
+
+    parser.add_argument("-y",
+            dest="accept_eula",
+            action="store_true",
+            help="Accept the End User Licence Agreement.")
+            
+
     call_extensions(extensions, "setup_argparse", parser)
 
     # Parse standard arguments and extra arguments
@@ -606,7 +619,7 @@ def call_extensions(extensions, fct, *args):
 # Check if an EULA (End User License Agreement) is present in the manifest
 # directory and if it has been accepted.
 #===============================================================================
-def check_eula():
+def check_eula(accept_eula):
     manifest_dir = os.path.join(dragon.WORKSPACE_DIR, ".repo", "manifests")
     eula_filenames = [ "EULA.txt", "EULA.md" ]
     for eula_filename in eula_filenames:
@@ -629,25 +642,28 @@ def check_eula():
     if os.path.exists(ok_filepath):
         return
 
-    print("You first need to accept the folowing End User Licence Agreement:")
-    print()
-    input("Press [ENTER]")
+    if not accept_eula:
+        print("You first need to accept the folowing End User Licence Agreement:")
+        print()
+        input("Press [ENTER]")
 
-    # -X : do not clear screen at the end
-    # -E : stop less at the end
-    cmd = ["less", "-XE", eula_filepath]
-    subprocess.call(cmd)
+        # -X : do not clear screen at the end
+        # -E : stop less at the end
+        cmd = ["less", "-XE", eula_filepath]
+        subprocess.call(cmd)
 
-    # Ask for answer
-    ok_answers = ["y", "Y"]
-    ko_answers = ["n", "N"]
-    answer = None
-    while answer not in ok_answers + ko_answers:
-        answer = input("Do you accept ? [y/n]")
+        # Ask for answer
+        ok_answers = ["y", "Y"]
+        ko_answers = ["n", "N"]
+        answer = None
+        while answer not in ok_answers + ko_answers:
+            answer = input("Do you accept ? [y/n]")
 
-    # Create file if OK, abort if KO
-    if answer in ko_answers:
-        sys.exit(1)
+        # Create file if OK, abort if KO
+        if answer in ko_answers:
+            sys.exit(1)
+    else:
+        print("You accept the End User Licence Agreement.")
 
     utils.makedirs(os.path.dirname(ok_filepath))
     with open(ok_filepath, "w"):
@@ -663,7 +679,7 @@ def main():
     signal.signal(signal.SIGTERM, signal_handler)
 
     # If an EULA is present, check that it as been accepted.
-    check_eula()
+    check_eula(options.accept_eula)
 
     # Load extensions
     extensions = load_extensions()
@@ -699,9 +715,10 @@ def main():
     options.product_dir = None
     options.variant_dir = None
 
-    if sys.platform != "win32" and os.geteuid() == 0:
-        logging.error("Please do not run this script as root.")
-        sys.exit(1)
+    if not options.root:
+        if sys.platform != "win32" and os.geteuid() == 0:
+            logging.error("Please do not run this script as root.")
+            sys.exit(1)
 
     # List products and exit
     if options.list_products:
