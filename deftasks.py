@@ -154,6 +154,13 @@ dragon.add_meta_task(
     subtasks=["alchemy menuconfig"],
     weak = True
 )
+dragon.add_meta_task(
+    name="nconfig",
+    desc="Modules configuration with a pretty ncurses interface.",
+    subtasks=["alchemy nconfig"],
+    weak = True
+)
+
 
 gen_tasks = {
     "geneclipse": "Generate Eclipse CDT project",
