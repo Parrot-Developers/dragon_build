@@ -309,9 +309,6 @@ def setup_globals(options):
     if not dragon.PARROT_BUILD_PROP_PROJECT:
         dragon.PARROT_BUILD_PROP_PROJECT = dragon.PARROT_BUILD_PROP_PRODUCT
 
-    if not dragon.PARROT_BUILD_TAG_PREFIX:
-        dragon.PARROT_BUILD_TAG_PREFIX = dragon.PARROT_BUILD_PROP_PRODUCT
-
     # Get uid from command line overwrite if not given in environment
     if options.build_id and not dragon.PARROT_BUILD_PROP_UID:
         dragon.PARROT_BUILD_PROP_UID = options.build_id
@@ -332,11 +329,17 @@ def setup_globals(options):
     if not dragon.PARROT_BUILD_PROP_VERSION:
         assert dragon.PARROT_BUILD_PROP_UID
         try:
-            _, dragon.PARROT_BUILD_PROP_VERSION = dragon.split_uid(dragon.PARROT_BUILD_PROP_UID)
+            tag_prefix, dragon.PARROT_BUILD_PROP_VERSION = dragon.split_uid(
+                dragon.PARROT_BUILD_PROP_UID)
+            if not dragon.PARROT_BUILD_TAG_PREFIX:
+                dragon.PARROT_BUILD_TAG_PREFIX = tag_prefix
         except ValueError:
             logging.error("Unable to extract version from UID (%s).",
                     dragon.PARROT_BUILD_PROP_UID)
             sys.exit(1)
+
+    if not dragon.PARROT_BUILD_TAG_PREFIX:
+        dragon.PARROT_BUILD_TAG_PREFIX = dragon.PARROT_BUILD_PROP_PRODUCT
 
     # Construct a default uid based on product/variant/version/date
     if not dragon.PARROT_BUILD_PROP_UID:
