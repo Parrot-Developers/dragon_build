@@ -224,6 +224,10 @@ class MetaTask(Task):
                 exechook=exechook, prehook=prehook, posthook=posthook,
                 weak=weak)
         self.subtasks = subtasks
+        if subtasks is not None and exechook is not None:
+            logging.warning(
+                "Meta task '%s' has both 'exechook' and 'subtasks'" +
+                " defined. Ignoring 'subtasks'.", self.name)
 
     def _do_exec(self, args=None):
         # Subtask list can be empty in case user was only interested in hooks
