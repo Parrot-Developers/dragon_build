@@ -554,7 +554,7 @@ def gen_release_archive():
     tar_cmd = "tar --force-local" if sys.platform == "win32" else "tar"
     # Add --format to tar command to handle sparse files on macos
     tar_format = "ustar" if sys.platform == "darwin" else "gnu"
-    exec_cmd("%s --exclude=.git -C %s -hcf %s --format=%s ." % (tar_cmd, RELEASE_DIR, tmp_release_file, tar_format))
+    exec_cmd("%s --exclude=.git -C %s -hcvf %s --format=%s ." % (tar_cmd, RELEASE_DIR, tmp_release_file, tar_format))
 
     # Do not create link at root of workspace if output dir is somewhere else
     # (jenkins for example)
